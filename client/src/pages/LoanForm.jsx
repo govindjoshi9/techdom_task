@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import API from "../services/api";
 
 const LoanForm = () => {
@@ -9,34 +9,64 @@ const LoanForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await API.post("/loans", { amount, term });
+      await API.post("/loans", { amount, term });
       setMessage("Loan request submitted successfully!");
     } catch (error) {
-      setMessage("Failed to submit loan request");
+      setMessage("Failed to submit loan request",error);
     }
   };
 
   return (
-    <div>
-      <h2>Apply for a Loan</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="number"
-          placeholder="Amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Term (weeks)"
-          value={term}
-          onChange={(e) => setTerm(e.target.value)}
-          required
-        />
-        <button type="submit">Submit</button>
+    <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6 mt-8">
+      <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
+        Apply for a Loan
+      </h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">
+            Loan Amount
+          </label>
+          <input
+            type="number"
+            placeholder="Enter Loan Amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">
+            Loan Term (Weeks)
+          </label>
+          <input
+            type="number"
+            placeholder="Enter Loan Term"
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            required
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
+        >
+          Submit Loan Request
+        </button>
       </form>
-      {message && <p>{message}</p>}
+
+      {message && (
+        <p
+          className={`mt-4 text-center font-medium ${
+            message.includes("success") ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {message}
+        </p>
+      )}
     </div>
   );
 };

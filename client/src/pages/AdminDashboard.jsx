@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
+import LoanCard from "../components/LoanCard";
 
 const AdminDashboard = () => {
-  const [pendingLoans, setPendingLoans] = useState([]);
+  const [loans, setLoans] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchLoans = async () => {
       try {
-        const response = await API.get("/loans"); // Adjust this if there's an admin-specific endpoint
-        setPendingLoans(
-          response.data.filter((loan) => loan.state === "PENDING")
-        );
+        const response = await API.get("/loans");
+        setLoans(response.data);
+        console.log(response)
       } catch (err) {
-        console.error(err);
+        setError("Failed to fetch loans.",err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchLoans();
@@ -21,23 +25,21 @@ const AdminDashboard = () => {
   const approveLoan = async (id) => {
     try {
       await API.put(`/loans/${id}/approve`);
-      setPendingLoans(pendingLoans.filter((loan) => loan._id !== id));
+      setLoans(loans.filter((loan) => loan._id !== id));
     } catch (err) {
-      console.error(err);
+      setError("Failed to approve loan.",err);
     }
   };
 
+  if (loading) return <p className="text-center">Loading...</p>;
+
   return (
-    <div>
-      <h2>Admin Dashboard</h2>
-      <ul>
-        {pendingLoans.map((loan) => (
-          <li key={loan._id}>
-            Loan #{loan._id}: {loan.amount} - {loan.state}
-            <button onClick={() => approveLoan(loan._id)}>Approve</button>
-          </li>
-        ))}
-      </ul>
+    <div className="max-w-3xl mx-auto mt-10">
+      <h2 className="text-3xl font-bold text-center mb-4">Admin Dashboard</h2>
+      {error && <p className="text-red-500 text-center">{error}</p>}
+      {loans.map((loan) => (
+        <LoanCard key={loan._id} loan={loan} onApprove={approveLoan} />
+      ))}
     </div>
   );
 };
