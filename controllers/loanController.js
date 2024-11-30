@@ -54,6 +54,18 @@ exports.getCustomerLoans = async (req, res) => {
   }
 };
 
+///admin lone can see
+
+exports.getadminlones = async (req, res) => {
+  try {
+    const loans = await Loan.find(); // Fetch all loans
+    res.status(200).json(loans);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to retrieve loans" });
+  }
+};
+
 // Approve a loan (Admin only)
 exports.approveLoan = async (req, res) => {
   const { id } = req.params;

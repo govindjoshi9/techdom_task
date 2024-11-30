@@ -13,12 +13,28 @@ const Login = () => {
     try {
       const response = await API.post("/auth/login", { email, password });
       localStorage.setItem("token", response.data.token);
-      navigate("/dashboard");
+
+      // Redirect based on user role
+      const userRole = response.data.role; // Now this will work
+      if (userRole === "admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
-      setError("Invalid credentials",err);
+      // Improved error handling
+      if (err.response) {
+        setError(`Error: ${err.response.data.error || "Invalid credentials"}`);
+        console.error("Login Error Response:", err.response.data);
+      } else if (err.request) {
+        setError("No response from server. Please try again.");
+        console.error("Login Error Request:", err.request);
+      } else {
+        setError("Error: " + err.message);
+        console.error("Login Error:", err.message);
+      }
     }
   };
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8">

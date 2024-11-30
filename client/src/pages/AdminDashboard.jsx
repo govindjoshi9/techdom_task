@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import API from "../services/api";
 import LoanCard from "../components/LoanCard";
+import API from "../services/api";
 
-const AdminDashboard = () => {
+export default function AdminDashboard() {
   const [loans, setLoans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -10,11 +10,11 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchLoans = async () => {
       try {
-        const response = await API.get("/loans");
+        const response = await API.get("/loans/admin-loans"); // Ensure this endpoint returns all loans for admin
         setLoans(response.data);
-        console.log(response)
       } catch (err) {
-        setError("Failed to fetch loans.",err);
+        setError("Failed to fetch loans.");
+        console.error("Fetch loans error:", err);
       } finally {
         setLoading(false);
       }
@@ -24,10 +24,12 @@ const AdminDashboard = () => {
 
   const approveLoan = async (id) => {
     try {
-      await API.put(`/loans/${id}/approve`);
+      await API.put(`/loans/${id}/approve`); // Adjust the endpoint as needed
+      // Update the loans state to remove the approved loan
       setLoans(loans.filter((loan) => loan._id !== id));
     } catch (err) {
-      setError("Failed to approve loan.",err);
+      setError("Failed to approve loan.");
+      console.error("Approve loan error:", err);
     }
   };
 
@@ -38,10 +40,8 @@ const AdminDashboard = () => {
       <h2 className="text-3xl font-bold text-center mb-4">Admin Dashboard</h2>
       {error && <p className="text-red-500 text-center">{error}</p>}
       {loans.map((loan) => (
-        <LoanCard key={loan._id} loan={loan} onApprove={approveLoan} />
+        <LoanCard key={loan._id} loan={loan} onApprove={approveLoan} isAdmin={true} />
       ))}
     </div>
   );
-};
-
-export default AdminDashboard;
+}
