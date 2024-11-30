@@ -1,8 +1,26 @@
-# React + Vite
+# Loan Management System - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend of the Loan Management System, built with **React**, **Vite**, and **Tailwind CSS**. The application allows customers to apply for loans and view their loan statuses, while admins can approve or reject loan applications.
 
-Currently, two official plugins are available:
+## Features
+- User Registration and Login
+- Loan Application for Customers
+- Admin Dashboard for Loan Approval
+- Loan Repayment Tracking
+- Role-Based Access Control (Admin vs Customer)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
+- **React** with Vite
+- **Tailwind CSS** for styling
+- **Axios** for API requests
+- **Node.js** as the backend (API)
+
+## Prerequisites
+- Node.js >= 14.x
+- NPM or Yarn
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/loan-management-frontend.git
+   cd loan-management-frontend

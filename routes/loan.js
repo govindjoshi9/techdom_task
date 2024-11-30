@@ -3,7 +3,7 @@ const {
   createLoan,
   getCustomerLoans,
   approveLoan,
-  getadminlones,
+  getAdminLoans,
 } = require("../controllers/loanController");
 const { authenticate, authorize } = require("../middleware/authMiddleware");
 const Loan = require("../models/Loan");
@@ -16,7 +16,7 @@ router.post("/", authenticate, authorize("customer"), createLoan);
 // Get loans for the logged-in customer
 router.get("/", authenticate, authorize("customer"), getCustomerLoans);
 // Get all loans (Admin only)
-router.get("/admin-loans", authenticate, authorize("admin"), getadminlones);
+router.get("/admin-loans", authenticate, authorize("admin"), getAdminLoans);
 // Approve a loan (Admin only)
 router.put("/:id/approve", authenticate, authorize("admin"), approveLoan);
 

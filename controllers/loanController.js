@@ -21,22 +21,21 @@ const generateRepayments = (amount, term, startDate) => {
 
 // Create a new loan
 exports.createLoan = async (req, res) => {
-  const { amount, term } = req.body;
-  const userId = req.user.id;
+  const { customer, amount, term } = req.body;
 
   try {
-    const repayments = generateRepayments(amount, term, new Date());
     const loan = new Loan({
-      customer: userId,
+      customer,
       amount,
       term,
-      scheduledRepayments: repayments,
+      state: "PENDING", // Ensure it's explicitly set
+      scheduledRepayments: generateRepayments(amount, term), // Optional if using a repayment schedule
     });
 
     await loan.save();
-    res.status(201).json({ message: "Loan request submitted", loan });
+    res.status(201).json({ message: "Loan created successfully", loan });
   } catch (error) {
-    console.error(error);
+    console.error("Loan creation error:", error);
     res.status(500).json({ error: "Failed to create loan" });
   }
 };
@@ -56,30 +55,35 @@ exports.getCustomerLoans = async (req, res) => {
 
 ///admin lone can see
 
-exports.getadminlones = async (req, res) => {
+exports.getAdminLoans = async (req, res) => {
   try {
-    const loans = await Loan.find(); // Fetch all loans
+    const loans = await Loan.find({ state: "PENDING" }) // Only fetch pending loans
+      .populate("customer", "name email"); // Populate customer details for display
+
     res.status(200).json(loans);
   } catch (error) {
-    console.error(error);
+    console.error("Failed to retrieve admin loans:", error);
     res.status(500).json({ error: "Failed to retrieve loans" });
   }
 };
 
 // Approve a loan (Admin only)
 exports.approveLoan = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const loan = await Loan.findById(id);
-    if (!loan) return res.status(404).json({ error: "Loan not found" });
+    const loanId = req.params.id;
+    const loan = await Loan.findByIdAndUpdate(
+      loanId,
+      { status: "approved" },
+      { new: true }
+    );
 
-    loan.state = "APPROVED";
-    await loan.save();
+    if (!loan) {
+      return res.status(404).json({ error: "Loan not found." });
+    }
 
-    res.status(200).json({ message: "Loan approved successfully", loan });
+    res.status(200).json({ message: "Loan approved successfully.", loan });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to approve loan" });
-  }
-};
+    console.error("Approve loan error:", error);
+    res.status(500).json({ error: "Failed to approve loan." });
+  };
+}
